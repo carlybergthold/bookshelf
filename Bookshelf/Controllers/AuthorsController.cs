@@ -7,17 +7,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Bookshelf.Data;
 using Bookshelf.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Bookshelf.Controllers
 {
     public class AuthorsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthorsController(ApplicationDbContext context)
+
+        public AuthorsController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
+        private Task<ApplicationUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+
 
         // GET: Authors
         public async Task<IActionResult> Index()
@@ -56,6 +62,8 @@ namespace Bookshelf.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,firstName,lastName,penName,preferredGenre,ApplicationUserId")] Author author)
         {
+            var user = await GetCurrentUserAsync();
+            author.ApplicationUser = user;
             if (ModelState.IsValid)
             {
                 _context.Add(author);
