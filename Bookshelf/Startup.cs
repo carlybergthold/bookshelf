@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Bookshelf.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Bookshelf.Models;
 
 namespace Bookshelf
 {
@@ -35,6 +36,10 @@ namespace Bookshelf
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlServer(
                    Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDefaultIdentity<ApplicationUser>()
+                .AddDefaultUI(UIFramework.Bootstrap4)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
